@@ -1,0 +1,182 @@
+[
+  {
+    "springClassName": "employees",
+    "className": "createEmployees",
+    "fields": [
+      {
+        "fieldName": "name",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "MIN_MAX_LENGTH",
+            "params": {
+              "min": 5,
+              "max": 50
+            }
+          },
+          {
+            "type": "ALLOWED_CHARACTERS",
+            "params": {}
+          }
+        ]
+      },
+      {
+        "fieldName": "email",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "EMAIL",
+            "params": {}
+          }
+        ]
+      },
+      {
+        "fieldName": "salary",
+        "springFieldType": "JAVA.LANG.LONG",
+        "fieldType": "LONG",
+        "attributes": [
+          {
+            "type": "MIN_MAX_VALUE",
+            "params": {
+              "min": 1000000,
+              "max": 1000000000
+            }
+          },
+          {
+            "type": "NUMERIC",
+            "params": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "springClassName": "employees",
+    "className": "updateEmployees",
+    "fields": [
+      {
+        "fieldName": "name",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "MIN_MAX_LENGTH",
+            "params": {
+              "min": 5,
+              "max": 50
+            }
+          },
+          {
+            "type": "ALLOWED_CHARACTERS",
+            "params": {}
+          }
+        ]
+      },
+      {
+        "fieldName": "salary",
+        "springFieldType": "JAVA.LANG.LONG",
+        "fieldType": "LONG",
+        "attributes": [
+          {
+            "type": "MIN_MAX_VALUE",
+            "params": {
+              "min": 1000000,
+              "max": 1000000000
+            }
+          },
+          {
+            "type": "NUMERIC",
+            "params": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "springClassName": "user",
+    "className": "user",
+    "fields": [
+      {
+        "fieldName": "firstName",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "MIN_MAX_LENGTH",
+            "params": {
+              "min": 2,
+              "max": 50
+            }
+          },
+          {
+            "type": "REQUIRED",
+            "params": {}
+          },
+          {
+            "type": "ALPHA_NUMERIC",
+            "params": {}
+          }
+        ]
+      },
+      {
+        "fieldName": "lastName",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "MIN_MAX_LENGTH",
+            "params": {
+              "min": 2,
+              "max": 50
+            }
+          },
+          {
+            "type": "REQUIRED",
+            "params": {}
+          },
+          {
+            "type": "ALPHA_NUMERIC",
+            "params": {}
+          }
+        ]
+      },
+      {
+        "fieldName": "email",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "REQUIRED",
+            "params": {}
+          },
+          {
+            "type": "REGEX",
+            "params": {
+              "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+            }
+          }
+        ]
+      },
+      {
+        "fieldName": "password",
+        "springFieldType": "JAVA.LANG.STRING",
+        "fieldType": "STRING",
+        "attributes": [
+          {
+            "type": "MIN_MAX_LENGTH",
+            "params": {
+              "min": 8,
+              "max": 50
+            }
+          },
+          {
+            "type": "REQUIRED",
+            "params": {}
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,17 @@
+ [
+    {
+      "className": "employees",
+      "validatedFields": [
+        "name",
+        "email",
+        "salary"
+      ]
+    },
+   {
+     "className": "updateEmployees",
+     "validatedFields": [
+       "name",
+       "salary"
+     ]
+   }
+  ]
