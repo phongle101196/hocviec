@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.kafka.annotation.EnableKafka;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @SpringBootApplication
 @EnableKafka
-public class EmployeeServiceApplication {
+    public class EmployeeServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EmployeeServiceApplication.class, args);

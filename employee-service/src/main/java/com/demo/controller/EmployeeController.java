@@ -1,10 +1,8 @@
 package com.demo.controller;
 
-import com.demo.dto.CreateEmployeeDto;
-import com.demo.dto.UpdateEmployeeDto;
+import com.demo.dto.*;
 import com.demo.entity.Employee;
 import com.demo.exception.ResourceNotFoundException;
-import com.demo.payload.ApiResponse;
 import com.demo.service.IEmployeeService;
 import com.demo.validation.service.ValidationModule;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,20 +24,30 @@ public class EmployeeController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<ApiResponse<CreateEmployeeDto>> createEmployee(
+    public ResponseEntity<ApiResponse<EmployeeDto>> createEmployee(
             @RequestParam String className,
             @RequestBody Map<String, String> requestBody) {
 
         // kiểm tra lỗi đầu vào
         Map<String, List<String>> errors = validationModule.validate(className, requestBody);
         if (!errors.isEmpty()) {
+
+            List<String> errorMessage = new ArrayList<>();
+
+            errors.forEach((field, messages) -> {
+                messages.forEach(message -> {
+                    errorMessage.add("Field '" + field + "' " + message);
+                });
+            });
+
             return ResponseEntity.badRequest().body(ApiResponse.error(
                     HttpStatus.BAD_REQUEST.value(),
-                    "Invalid input data!"));
+                    "Invalid input data!",
+                    errorMessage));
         }
 
         // gọi service tạo mới employee
-        CreateEmployeeDto created = employeeService.createEmployee(requestBody);
+        EmployeeDto created = employeeService.createEmployee(requestBody);
 
         // trả về response thành công
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -56,20 +65,30 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UpdateEmployeeDto>> updateEmployee(
+    public ResponseEntity<ApiResponse<EmployeeDto>> updateEmployee(
             @PathVariable Long id,
             @RequestParam String className,
             @RequestBody Map<String, String> requestBody) {
         // kiểm tra dl đầu vào
         Map<String, List<String>> errors = validationModule.validate(className, requestBody);
         if (!errors.isEmpty()) {
+
+            List<String> errorMessage = new ArrayList<>();
+
+            errors.forEach((field, messages) -> {
+                messages.forEach(message -> {
+                    errorMessage.add("Field '" + field + "' " + message);
+                });
+            });
+
             return ResponseEntity.badRequest().body(ApiResponse.error(
                     HttpStatus.BAD_REQUEST.value(),
-                    "Invalid input data!"));
+                    "Invalid input data!",
+                    errorMessage));
         }
 
         // gọi service update
-        UpdateEmployeeDto updated = employeeService.updateEmployee(id, requestBody);
+        EmployeeDto updated = employeeService.updateEmployee(id, requestBody);
 
         return ResponseEntity.ok(ApiResponse.success(
                 "Employee updated successfully!", updated));
@@ -91,5 +110,11 @@ public class EmployeeController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "An error occurred"));
         }
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<ApiResponse<List<EmployeeDto>>> searchEmployees(@RequestBody List<FilterCriteria> filters) {
+        List<EmployeeDto> employees = employeeService.searchEmployees(filters);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(),"Success", employees, null));
     }
 }

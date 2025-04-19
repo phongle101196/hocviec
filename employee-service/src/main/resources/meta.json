@@ -1,7 +1,7 @@
 [
   {
     "springClassName": "employees",
-    "className": "createEmployees",
+    "className": "createEmployee",
     "fields": [
       {
         "fieldName": "name",
@@ -54,7 +54,7 @@
   },
   {
     "springClassName": "employees",
-    "className": "updateEmployees",
+    "className": "updateEmployee",
     "fields": [
       {
         "fieldName": "name",

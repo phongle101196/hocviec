@@ -1,6 +1,7 @@
 package com.demo.exception;
 
-import com.demo.payload.ApiResponse;
+import com.demo.dto.ApiResponse;
+import com.google.gson.JsonParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -28,18 +29,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ApiResponse<String>> handleDuplicateResource(DuplicateResourceException ex) {
-        ApiResponse<String> response = ApiResponse.error(HttpStatus.CONFLICT.value(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    public ResponseEntity<ApiResponse<?>> handleDuplicateResourceException(DuplicateResourceException ex) {
+        ApiResponse<?> response = ApiResponse.error(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleResourceNotFound(ResourceNotFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse<?>> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ApiResponse<?> response = ApiResponse.error(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGlobalException(Exception ex) {
@@ -47,23 +54,33 @@ public class GlobalExceptionHandler {
         error.put("error", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         ApiResponse<String> response = ApiResponse.error(
                 HttpStatus.BAD_REQUEST.value(),
-                "Invalid employee id format: " + ex.getValue()
-        );
+                "Invalid employee id format: " + ex.getValue());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<String>> handleJsonParseError(HttpMessageNotReadableException ex) {
-        ApiResponse<String> response = ApiResponse.error(400, "Invalid numeric value for salary");
+
+        Throwable rootCause = ex.getRootCause();
+        String errorMessage = "Invalid request format";
+
+        if (rootCause instanceof JsonParseException) {
+            errorMessage = "Malformed JSON: " +rootCause.getMessage();
+        } else if (rootCause instanceof InvalidFilterException) {
+            errorMessage = "Invalid data format: " +rootCause.getMessage();
+        }
+        ApiResponse<String> response = ApiResponse.error(HttpStatus.BAD_REQUEST.value(), errorMessage);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<String>> handleCustomException(CustomException ex) {
-        ApiResponse<String> response = ApiResponse.error(ex.getStatusCode(), ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getStatusCode()));
+
+    @ExceptionHandler(InvalidFilterException.class)
+    public ResponseEntity<ApiResponse<String>> handleInvalidFilterException(InvalidFilterException ex) {
+        ApiResponse<String> response = new ApiResponse<>(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null, null);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }

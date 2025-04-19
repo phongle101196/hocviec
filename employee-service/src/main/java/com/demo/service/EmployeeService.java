@@ -1,6 +1,8 @@
 package com.demo.service;
 
 import com.demo.dto.CreateEmployeeDto;
+import com.demo.dto.EmployeeDto;
+import com.demo.dto.FilterCriteria;
 import com.demo.dto.UpdateEmployeeDto;
 import com.demo.entity.Employee;
 import com.demo.exception.DuplicateResourceException;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +27,11 @@ public class EmployeeService implements IEmployeeService{
     private final EmployeeRepository employeeRepository;
     private final KafkaTemplate<String, HttpServiceDto> kafkaTemplate;
     private final ModelMapper modelMapper;
+    private final GenericSearchService<Employee> genericSearchService;
 
 
     @Override
-    public CreateEmployeeDto createEmployee(Map<String, String> requestBody) {
+    public EmployeeDto createEmployee(Map<String, String> requestBody) {
 
         String email = requestBody.get("email");
         if (employeeRepository.existsByEmail(email)){
@@ -50,7 +54,6 @@ public class EmployeeService implements IEmployeeService{
         body.put("employeeId", savedEmployee.getId());
         body.put("name", savedEmployee.getName());
         body.put("email", savedEmployee.getEmail());
-        body.put("notificationType", "FIREBASE");
         body.put("action", "CREATED");
 
         HttpServiceDto httpServiceDto = new HttpServiceDto(
@@ -63,7 +66,7 @@ public class EmployeeService implements IEmployeeService{
         // Gửi sự kiện đến Kafka
         kafkaTemplate.send("employee-topic", httpServiceDto);
 
-        return modelMapper.map(savedEmployee, CreateEmployeeDto.class);
+        return modelMapper.map(savedEmployee, EmployeeDto.class);
     }
 
 
@@ -79,7 +82,7 @@ public class EmployeeService implements IEmployeeService{
     }
 
     @Override
-    public UpdateEmployeeDto updateEmployee(Long id, Map<String, String> requestBody) {
+    public EmployeeDto updateEmployee(Long id, Map<String, String> requestBody) {
 
         // tìm employee để cập nhật
         Employee existingEmployee = employeeRepository.findById(id)
@@ -94,7 +97,7 @@ public class EmployeeService implements IEmployeeService{
         // lưu db
         Employee updateEmployee = employeeRepository.save(existingEmployee);
         // map
-        return modelMapper.map(updateEmployee, UpdateEmployeeDto.class);
+        return modelMapper.map(updateEmployee, EmployeeDto.class);
     }
 
     @Override
@@ -103,5 +106,15 @@ public class EmployeeService implements IEmployeeService{
                         .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " +id));
         employeeRepository.deleteById(id);
     }
+
+    @Override
+    public List<EmployeeDto> searchEmployees(List<FilterCriteria> filters) {
+        List<Employee> employees = genericSearchService.search(filters, employeeRepository);
+        System.out.println("HDASHDASDHASDHAS" + filters);
+        return employees.stream()
+                .map(employee -> modelMapper.map(employee, EmployeeDto.class))
+                .collect(Collectors.toList());
+    }
+
 
 }

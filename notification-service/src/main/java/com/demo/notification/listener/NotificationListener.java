@@ -30,7 +30,7 @@ public class NotificationListener {
         try {
             Map<String, Object> body = dto.getBody();
 
-            String notificationType = (String) body.getOrDefault("notificationType", "FIREBASE");
+            String notificationType = (String) body.getOrDefault("notificationType", "TELEGRAM");
             String message = buildNotificationMessage(body);
 
             switch (notificationType.toUpperCase()) {

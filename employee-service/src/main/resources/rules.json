@@ -1,6 +1,6 @@
  [
     {
-      "className": "employees",
+      "className": "createEmployee",
       "validatedFields": [
         "name",
         "email",
@@ -8,7 +8,7 @@
       ]
     },
    {
-     "className": "updateEmployees",
+     "className": "updateEmployee",
      "validatedFields": [
        "name",
        "salary"
